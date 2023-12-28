@@ -1,27 +1,31 @@
 import {
   Initialize,
-  ModifyPosition,
+  ModifyLiquidity,
   Swap as SwapEvent,
-} from "../generated/PoolManager/PoolManager";
-import { ContractStat, Pool, Position, Swap } from "../generated/schema";
+  Transfer as TransferEvent,
+  ProtocolFeeControllerUpdated as ProtocolFeeControllerUpdatedEvent,
+  ProtocolFeeUpdated as ProtocolFeeUpdatedEvent,
+  DynamicSwapFeeUpdated as DynamicSwapFeeUpdatedEvent,
+  OperatorSet as OperatorSetEvent,
+  OwnerChanged as OwnerChangedEvent
+} from "../../generated/PoolManager/PoolManager";
+import { PoolManager, Pool, Position, Swap } from "../../generated/schema";
 import { Bytes, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import {
   ADDRESS_ZERO,
-  CONTRACT_ADDRESS,
   ONE_BI,
   ZERO_BD,
   ZERO_BI,
-} from "./constants";
+} from "../constants";
 import {
-  handlePoolCreated,
-  loadContractStat,
+  loadPoolManagerCreated,
   loadTransaction,
   sqrtPriceX96ToTokenPrices,
-} from "./helpers";
-import { updatePoolHourData } from "./updateIntervals";
+} from "../helpers";
+import { updatePoolHourData } from "../updateIntervals";
 
 export function handleInitialize(event: Initialize): void {
-  handlePoolCreated();
+  loadPoolManagerCreated();
   let pool = new Pool(event.params.id.toHexString());
   pool.poolKey = event.params.id;
   pool.currency0 = event.params.currency0;
@@ -38,11 +42,11 @@ export function handleInitialize(event: Initialize): void {
   pool.save();
 }
 
-export function handleModifyPosition(event: ModifyPosition): void {
-  let stat = loadContractStat();
-  stat.txCnt = stat.txCnt.plus(ONE_BI);
-  stat.modifyPositionCnt = stat.modifyPositionCnt.plus(ONE_BI);
-  stat.save();
+export function handleModifyLiquidity(event: ModifyLiquidity): void {
+  let poolManager = loadPoolManagerCreated();
+  poolManager.txCount = poolManager.txCount.plus(ONE_BI);
+  poolManager.modifyPositionCount = poolManager.modifyPositionCount.plus(ONE_BI);
+  poolManager.save();
   let trans = loadTransaction(event);
   let pool = Pool.load(event.params.id.toHexString());
   if (pool === null) {
@@ -80,10 +84,10 @@ export function handleModifyPosition(event: ModifyPosition): void {
 }
 
 export function handleSwap(event: SwapEvent): void {
-  let stat = loadContractStat();
-  stat.txCnt = stat.txCnt.plus(ONE_BI);
-  stat.swapCnt = stat.swapCnt.plus(ONE_BI);
-  stat.save();
+  let poolManager = loadPoolManagerCreated();
+  poolManager.txCount = poolManager.txCount.plus(ONE_BI);
+  poolManager.swapCount = poolManager.swapCount.plus(ONE_BI);
+  poolManager.save();
   let trans = loadTransaction(event);
   let pool = Pool.load(event.params.id.toHexString());
   if (pool === null) {
@@ -118,4 +122,28 @@ export function handleSwap(event: SwapEvent): void {
   pool.save();
 
   updatePoolHourData(event, swap.poolKey.toHexString());
+}
+
+export function handleTransfer(event: TransferEvent): void {
+  
+}
+
+export function handleProtocolFeeControllerUpdated(event: ProtocolFeeControllerUpdatedEvent): void {
+
+}
+
+export function handleProtocolFeeUpdated(event: ProtocolFeeUpdatedEvent): void {
+
+}
+
+export function handleDynamicSwapFeeUpdated(event: DynamicSwapFeeUpdatedEvent): void {
+
+}
+
+export function handleOperatorSet(event: OperatorSetEvent): void {
+
+}
+
+export function handleOwnerChanged(event: OwnerChangedEvent): void {
+
 }

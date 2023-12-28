@@ -1,23 +1,37 @@
-type ContractStat @entity {
-  # contract address
+type PoolManager @entity {
+  # poolManager address
   id: ID!
   # amount of pools created
-  poolCnt: BigInt!
+  poolCount: BigInt!
   # amoutn of transactions all time
-  txCnt: BigInt!
-  modifyPositionCnt: BigInt!
-  swapCnt: BigInt!
+  txCount: BigInt!
+
+  modifyPositionCount: BigInt!
+  swapCount: BigInt!
+
   # total liquidity
   totalLiquidity: BigInt!
 
-  # current owner of the factory
+  # Current lock length
+  lockLength: BigInt!
+
+  # protocol fee controller address
+  protocolFeeController: Bytes!
+  # 
+  controllerGasLimit: BigInt!
+  # current owner of the poolManager
   owner: ID!
 }
 
 type Pool @entity {
-  # poolKey
+  # pool key
   id: ID!
   poolKey: Bytes!
+  # creation
+  createdAtTimestamp: BigInt!
+  # block pool was created at
+  createdAtBlockNumber: BigInt!
+  # The following 5 parameters makes a pool unique
   currency0: Bytes!
   currency1: Bytes!
   fee: Int!
@@ -30,7 +44,7 @@ type Pool @entity {
   token0Price: BigDecimal!
   token1Price: BigDecimal!
   # current tick
-  tick: BigInt!
+  tick: BigInt! 
 }
 
 type Swap @entity {
@@ -53,6 +67,8 @@ type Swap @entity {
   token0Price: BigDecimal!
   token1Price: BigDecimal!
 }
+
+
 
 type Position @entity {
   id: ID!

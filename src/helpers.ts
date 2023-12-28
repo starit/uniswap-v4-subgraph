@@ -6,10 +6,10 @@ import {
   Address,
   ethereum,
 } from "@graphprotocol/graph-ts";
-import { ContractStat, Transaction } from "../generated/schema";
+import { PoolManager, Transaction } from "../generated/schema";
 import {
   ADDRESS_ZERO,
-  CONTRACT_ADDRESS,
+  POOL_MANAGER_ADDRESS,
   ONE_BI,
   ZERO_BI,
   ZERO_BD,
@@ -31,29 +31,27 @@ export function loadTransaction(event: ethereum.Event): Transaction {
   return transaction as Transaction;
 }
 
-export function handlePoolCreated(): void {
-  // load factory
-  let stat = ContractStat.load(CONTRACT_ADDRESS);
-  if (stat === null) {
-    stat = new ContractStat(CONTRACT_ADDRESS);
-    stat.poolCnt = ZERO_BI;
-    stat.txCnt = ZERO_BI;
-    stat.modifyPositionCnt = ZERO_BI;
-    stat.swapCnt = ZERO_BI;
-    stat.totalLiquidity = ZERO_BI;
-    stat.owner = ADDRESS_ZERO;
-  }
+// ? todo: fix params, add POOL_MANAGER_ADDRESS
+export function loadPoolManagerCreated(): PoolManager {
+  // load pool manager
+  let poolManager = PoolManager.load(POOL_MANAGER_ADDRESS);
+  if (poolManager === null) {
+    poolManager = new PoolManager(POOL_MANAGER_ADDRESS);
+    poolManager.poolCount = ZERO_BI;
+    poolManager.txCount = ZERO_BI;
+    poolManager.modifyPositionCount = ZERO_BI;
+    poolManager.swapCount = ZERO_BI;
+    poolManager.totalLiquidity = ZERO_BI;
+    poolManager.lockLength = ZERO_BI;
+    // poolManager.protocolFeeController = ADDRESS_ZERO; // Todo:: fix this
+    poolManager.controllerGasLimit = ZERO_BI; // Todo:: fix this
 
-  stat.poolCnt = stat.poolCnt.plus(ONE_BI);
-  stat.save();
-}
-
-export function loadContractStat(): ContractStat {
-  let stat = ContractStat.load(CONTRACT_ADDRESS);
-  if (stat === null) {
-    throw "contract is not deployed";
+    poolManager.owner = ADDRESS_ZERO;
+    poolManager.save();
   }
-  return stat;
+  // poolManager.poolCount = poolManager.poolCount.plus(ONE_BI);
+  
+  return poolManager;
 }
 
 let Q192 = BigInt.fromI32(2).pow(192);

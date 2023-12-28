@@ -8,7 +8,7 @@ Currently there are 6 entities for global statistics of Uniswap contract, loggin
 
 | Entity       | Data                                                        |
 | ------------ | ----------------------------------------------------------- |
-| ContractStat | global Uniswap-v4 Statistics                                |
+| PoolManager  | global Uniswap-v4 PoolManager data and statistics                                |
 | Pool         | statistic per pool                                          |
 | Swap         | details for each swap transaction                           |
 | Position     | details for each liquidity providing/extracting transaction |
@@ -70,7 +70,7 @@ query {
   contractStats {
     id
     poolCnt
-    txCnt
+    txCount
     modifyPositionCnt
     swapCnt
 
